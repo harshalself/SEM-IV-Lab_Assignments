@@ -1,0 +1,166 @@
+mysql> create table employee (emp_name varchar(10) primary key, street varchar(10), city varchar(10));
+Query OK, 0 rows affected (0.80 sec)
+
+mysql> create table Works(emp_name varchar(10), cmp_name varchar(10), salary int);
+Query OK, 0 rows affected (0.43 sec)
+
+mysql> create table company(cmp_name varchar(10) primary key, city varchar(10));
+Query OK, 0 rows affected (0.39 sec)
+
+mysql> create table manages(emp_name varchar(10),manager_name  varchar(10));
+Query OK, 0 rows affected (0.46 sec)
+
+mysql> show tables;
++-------------------+
+| Tables_in_Varad31 |
++-------------------+
+| Works             |
+| company           |
+| employee          |
+| manages           |
+| student           |
++-------------------+
+5 rows in set (0.00 sec)
+
+mysql> insert into employee values('Neha','A street','A city'),('Reesha','B street','B city'),('Ritika','C street','C city'),('Ritu','C street','C city'),('Ryan','A street','A city'),('kelly','B street','B city');
+Query OK, 6 rows affected (0.08 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> insert into company values('FB corp','A city'),('SB corp','B city'),('NB corp','C city'),('YB corp','A city'),('MB corp','B city');
+Query OK, 5 rows affected (0.10 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> insert into Works values('Neha','FB corp',40000),('Reesha','SB corp',30000),('Ritika','NB corp',35000),('Ritu','SB corp',25000),('Ryan','FB corp',15000),('kelly','FB corp',10000);
+Query OK, 6 rows affected (0.08 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> insert into manages values('Neha','Ryan'),('Neha','kelly'),('Reesha','Ritu');
+Query OK, 3 rows affected (0.11 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+1.
+
+mysql> select emp_name from Works where cmp_name='FB corp';
++----------+
+| emp_name |
++----------+
+| Neha     |
+| Ryan     |
+| kelly    |
++----------+
+3 rows in set (0.00 sec)
+
+2.
+mysql> select e.emp_name,e.city from employee e,Works w where e.emp_name=w.emp_name and  w.cmp_name='FB corp';
++----------+--------+
+| emp_name | city   |
++----------+--------+
+| Neha     | A city |
+| Ryan     | A city |
+| kelly    | B city |
++----------+--------+
+3 rows in set (0.00 sec)
+
+3.
+mysql> select e.emp_name,e.street,e.city from employee e,Works w where e.emp_name=w.emp_name and  w.cmp_name='FB corp' and w.salary>1000;
++----------+----------+--------+
+| emp_name | street   | city   |
++----------+----------+--------+
+| Neha     | A street | A city |
+| Ryan     | A street | A city |
+| kelly    | B street | B city |
++----------+----------+--------+
+3 rows in set (0.00 sec)
+
+4.
+mysql> select e.emp_name,w.cmp_name from  employee e,company c,Works w  where w.cmp_name=c.cmp_name and e.city=c.city and e.emp_name=w.emp_name;
++----------+----------+
+| emp_name | cmp_name |
++----------+----------+
+| Neha     | FB corp  |
+| Reesha   | SB corp  |
+| Ritika   | NB corp  |
+| Ryan     | FB corp  |
++----------+----------+
+4 rows in set (0.01 sec)
+
+5.
+mysql> select e.emp_name , m.manager_name from employee e ,employee r , manages m where e.emp_name=m.emp_name and r.emp_name=m.manager_name and e.city=r.city and e.street=r.street;
++----------+-----------+
+| emp_name | mang_name |
++----------+-----------+
+| Neha     | Ryan      |
++----------+-----------+
+1 row in set (0.00 sec)
+
+6.
+mysql> select e.emp_name from employee e, Works w where e.emp_name=w.emp_name and w.cmp_name <> 'FB corp';
++----------+
+| emp_name |
++----------+
+| Reesha   |
+| Ritika   |
+| Ritu     |
++----------+
+3 rows in set (0.00 sec)
+
+7.
+mysql> select e.emp_name,w.salary from employee e, Works w where e.emp_name=w.emp_name and w.salary>all(select salary from Works where cmp_name='SB corp');
++----------+--------+
+| emp_name | salary |
++----------+--------+
+| Neha     |  40000 |
+| Ritika   |  35000 |
++----------+--------+
+2 rows in set (0.00 sec)
+
+8.
+mysql> select cmp_name,city from company where city=all(select city from company where cmp_name='SB corp') and cmp_name!='SB corp';
++----------+--------+
+| cmp_name | city   |
++----------+--------+
+| MB corp  | B city |
++----------+--------+
+1 row in set (0.01 sec)
+
+
+9.
+mysql> select *  from Works w where salary>(select avg(salary) from Works w1 where w.cmp_name=w1.cmp_name);
++----------+----------+--------+
+| emp_name | cmp_name | salary |
++----------+----------+--------+
+| Neha     | FB corp  |  40000 |
+| Reesha   | SB corp  |  30000 |
++----------+----------+--------+
+2 rows in set (0.00 sec)
+
+10.
+mysql> select cmp_name from works group by cmp_name having count(emp_name)>=all(select count(emp_name) from works group by cmp_name);
++----------------+
+| comp_name      |
++----------------+
+| FB corp	     |
++----------------+
+1 row in set (0.00 sec)
+
+11.
+mysql> select cmp_name from works group by cmp_name having sum(salary)<=all(select sum(salary) from works group by cmp_name);
++----------------+
+| comp_name      |
++----------------+
+| NB corporation |
++----------------+
+1 row in set (0.00 sec)
+
+12.
+mysql> select cmp_name from Works group by cmp_name having avg(salary)>(select avg(salary) from Works where cmp_name='FB corp');
++----------+
+| cmp_name |
++----------+
+| SB corp  |
+| NB corp  |
++----------+
+2 rows in set (0.00 sec)
+
+
+

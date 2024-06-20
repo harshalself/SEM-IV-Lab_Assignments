@@ -1,0 +1,773 @@
+﻿C:\Users\Dell>mongosh
+Current Mongosh Log ID: 66324765aceac5558916c9b4
+Connecting to:          mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.2.3
+Using MongoDB:          7.0.8
+Using Mongosh:          2.2.3
+
+
+For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+
+
+------
+   The server generated these startup warnings when booting
+   2024-04-28T21:37:34.432+05:30: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+------
+
+
+test> show dbs;
+admin             40.00 KiB
+classworksystem  976.00 KiB
+config            72.00 KiB
+local             72.00 KiB
+test> show dbs
+admin             40.00 KiB
+classworksystem  976.00 KiB
+config           108.00 KiB
+demo               8.00 KiB
+local             72.00 KiB
+test> use demo
+switched to db demo
+
+
+1. Create a collection named books.
+
+
+demo> db.createCollection("books");
+{ ok: 1 }
+demo> db
+demo
+demo> show collections;
+books
+first
+
+
+2. Insert 5 records with field TITLE,DESCRIPTION,BY,URL,TAGS AND LIKES
+
+
+demo> db.books.insertMany([
+... {
+... "TITLE": "mongodb",
+... "DESCRIPTION": "MongoDB Descripttion 1",
+... "BY":"John",
+... "URL":"http://first.com/",
+... "TAGS":["NoSQL","Database"],
+... "LIKES":15
+... },
+... {
+... "TITLE": "mongodb",
+... "DESCRIPTION": "MongoDB Description 2",
+... "BY": "Alice",
+... "URL": "http://second.com",
+... "TAGS": ["NoSQL", "Database"],
+... "LIKES": 25
+... },
+... {
+... "TITLE": "nosql overview",
+...  "DESCRIPTION": "NoSQL Overview Description",
+... "BY": "John",
+... "URL": "http://third.com/",
+... "TAGS": ["NoSQL", "Database"],
+... "LIKES": 8
+... },
+... {
+... "TITLE": "mongodb tutorial",
+...     "DESCRIPTION": "MongoDB Tutorial Description",
+...     "BY": "Bob",
+...     "URL": "http://example.com/4",
+...     "TAGS": ["NoSQL", "Database"],
+...     "LIKES": 30
+... },
+... {
+... "TITLE": "nosql basics",
+... "DESCRIPTION": "NoSQL Basics Description",
+... "BY": "Alice",
+... "URL": "http://fourth.com/",
+... "TAGS": ["NoSQL", "Database"],
+... "LIKES": 12
+... }
+... ]);
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('66324c16aceac5558916c9b5'),
+    '1': ObjectId('66324c16aceac5558916c9b6'),
+    '2': ObjectId('66324c16aceac5558916c9b7'),
+    '3': ObjectId('66324c16aceac5558916c9b8'),
+    '4': ObjectId('66324c16aceac5558916c9b9')
+  }
+}
+
+
+3. Insert 1 more document in collection with additional field of user name and comments.
+
+
+demo> db.books.insertOne({
+... "TITLE": "nosql basics",
+...  "DESCRIPTION": "NoSQL Basics Description",
+...  "BY": "Rasika",
+... "URL": "http://sixth.com/",
+... "TAGS": ["NoSQL", "Database"],
+...     "LIKES": 20,
+...     "USERNAME": "Rasi",
+...     "COMMENTS": "Good"
+... });
+{
+  acknowledged: true,
+  insertedId: ObjectId('66324dbcaceac5558916c9ba')
+}
+
+
+4. Display all the documents whose title is 'mongodb'.
+
+
+demo> db.books.find({"TITLE":"mongodb"});
+[
+  {
+    _id: ObjectId('66324c16aceac5558916c9b5'),
+    TITLE: 'mongodb',
+    DESCRIPTION: 'MongoDB Descripttion 1',
+    BY: 'John',
+    URL: 'http://first.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 15
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b6'),
+    TITLE: 'mongodb',
+    DESCRIPTION: 'MongoDB Description 2',
+    BY: 'Alice',
+    URL: 'http://second.com',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 25
+  }
+]
+
+
+5. Display all the documents written by 'john' or whose title is 'mongodb'.
+
+
+demo> db.books.find({ $or: [{ "BY": "john" }, { "TITLE": "mongodb" }] });
+[
+  {
+    _id: ObjectId('66324c16aceac5558916c9b5'),
+    TITLE: 'mongodb',
+    DESCRIPTION: 'MongoDB Descripttion 1',
+    BY: 'John',
+    URL: 'http://first.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 15
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b6'),
+    TITLE: 'mongodb',
+    DESCRIPTION: 'MongoDB Description 2',
+    BY: 'Alice',
+    URL: 'http://second.com',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 25
+  }
+]
+
+
+6. Display all the documents whose title is 'mongodb' and written by 'john'.
+
+
+demo> db.books.find({ $and: [{ "BY": "John" }, { "TITLE": "mongodb" }] });
+[
+  {
+    _id: ObjectId('66324c16aceac5558916c9b5'),
+    TITLE: 'mongodb',
+    DESCRIPTION: 'MongoDB Descripttion 1',
+    BY: 'John',
+    URL: 'http://first.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 15
+  }
+]
+
+
+
+
+7. Display all the documents whose like is greater than 10. 
+
+
+demo> db.books.find({ "LIKES": { $gt: 10 } });
+[
+  {
+    _id: ObjectId('66324c16aceac5558916c9b5'),
+    TITLE: 'mongodb',
+    DESCRIPTION: 'MongoDB Descripttion 1',
+    BY: 'John',
+    URL: 'http://first.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 15
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b6'),
+    TITLE: 'mongodb',
+    DESCRIPTION: 'MongoDB Description 2',
+    BY: 'Alice',
+    URL: 'http://second.com',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 25
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b8'),
+    TITLE: 'mongodb tutorial',
+    DESCRIPTION: 'MongoDB Tutorial Description',
+    BY: 'Bob',
+    URL: 'http://example.com/4',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 30
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b9'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Alice',
+    URL: 'http://fourth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 12
+  },
+  {
+    _id: ObjectId('66324dbcaceac5558916c9ba'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Rasika',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 20,
+    USERNAME: 'Rasi',
+    COMMENTS: 'Good'
+  }
+]
+demo> db.books.find({});
+[
+  {
+    _id: ObjectId('66324c16aceac5558916c9b5'),
+    TITLE: 'mongodb',
+    DESCRIPTION: 'MongoDB Descripttion 1',
+    BY: 'John',
+    URL: 'http://first.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 15
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b6'),
+    TITLE: 'mongodb',
+    DESCRIPTION: 'MongoDB Description 2',
+    BY: 'Alice',
+    URL: 'http://second.com',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 25
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b7'),
+    TITLE: 'nosql overview',
+    DESCRIPTION: 'NoSQL Overview Description',
+    BY: 'John',
+    URL: 'http://third.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 8
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b8'),
+    TITLE: 'mongodb tutorial',
+    DESCRIPTION: 'MongoDB Tutorial Description',
+    BY: 'Bob',
+    URL: 'http://example.com/4',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 30
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b9'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Alice',
+    URL: 'http://fourth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 12
+  },
+  {
+    _id: ObjectId('66324dbcaceac5558916c9ba'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Rasika',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 20,
+    USERNAME: 'Rasi',
+    COMMENTS: 'Good'
+  }
+]
+demo> db.books.insertMany([
+... {
+... "TITLE": "nosql basics",
+...     "DESCRIPTION": "NoSQL Basics Description",
+... "BY": "Arnav",
+... "URL": "http://seventh.com/",
+... "TAGS": ["NoSQL", "Database"],
+... "LIKES": 100
+... },
+... {
+... "TITLE": "nosql basics",
+...     "DESCRIPTION": "NoSQL Basics Description",
+...     "BY": "John",
+...     "URL": "http://sixth.com/",
+...     "TAGS": ["NoSQL", "Database"],
+...     "LIKES": 120
+... },
+... {
+... "TITLE": "mongodb",
+...     "DESCRIPTION": "NoSQL Basics Description",
+...     "BY": "John",
+...     "URL": "http://sixth.com/",
+...     "TAGS": ["NoSQL", "Database"],
+...     "LIKES": 160,
+...     }
+... ]);
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId('66325286aceac5558916c9bb'),
+    '1': ObjectId('66325286aceac5558916c9bc'),
+    '2': ObjectId('66325286aceac5558916c9bd')
+  }
+}
+
+
+
+
+8. Display all the documents whose like is greater than 100 and whose title is either 'mongodb' or written by 'john'.
+
+
+demo> db.books.find({ "LIKES": { $gt: 100 }, $or: [{"TITLE":"mongodb"},{"BY":"John"}]});
+[
+  {
+    _id: ObjectId('66325286aceac5558916c9bc'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'John',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 120
+  },
+  {
+    _id: ObjectId('66325286aceac5558916c9bd'),
+    TITLE: 'mongodb',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'John',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 160
+  }
+]
+
+
+
+
+9. Update the title of 'mongodb' document to 'mongodb overview'
+
+
+demo> db.books.updateMany({"TITLE":"mongodb"},{$set: {"TITLE":"mongodb overview"}});
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 3,
+  modifiedCount: 3,
+  upsertedCount: 0
+}
+demo> db.books.find({});
+[
+  {
+    _id: ObjectId('66324c16aceac5558916c9b5'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'MongoDB Descripttion 1',
+    BY: 'John',
+    URL: 'http://first.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 15
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b6'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'MongoDB Description 2',
+    BY: 'Alice',
+    URL: 'http://second.com',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 25
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b7'),
+    TITLE: 'nosql overview',
+    DESCRIPTION: 'NoSQL Overview Description',
+    BY: 'John',
+    URL: 'http://third.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 8
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b8'),
+    TITLE: 'mongodb tutorial',
+    DESCRIPTION: 'MongoDB Tutorial Description',
+    BY: 'Bob',
+    URL: 'http://example.com/4',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 30
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b9'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Alice',
+    URL: 'http://fourth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 12
+  },
+  {
+    _id: ObjectId('66324dbcaceac5558916c9ba'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Rasika',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 20,
+    USERNAME: 'Rasi',
+    COMMENTS: 'Good'
+  },
+  {
+    _id: ObjectId('66325286aceac5558916c9bb'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Arnav',
+    URL: 'http://seventh.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 100
+  },
+  {
+    _id: ObjectId('66325286aceac5558916c9bc'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'John',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 120
+  },
+  {
+    _id: ObjectId('66325286aceac5558916c9bd'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'John',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 160
+  }
+]
+
+
+
+
+10. Delete the document titled 'nosql overview'.
+
+
+demo> db.books.deleteOne({"TITLE":"nosql overview"});
+{ acknowledged: true, deletedCount: 1 }
+demo> db.books.find({});
+[
+  {
+    _id: ObjectId('66324c16aceac5558916c9b5'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'MongoDB Descripttion 1',
+    BY: 'John',
+    URL: 'http://first.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 15
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b6'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'MongoDB Description 2',
+    BY: 'Alice',
+    URL: 'http://second.com',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 25
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b8'),
+    TITLE: 'mongodb tutorial',
+    DESCRIPTION: 'MongoDB Tutorial Description',
+    BY: 'Bob',
+    URL: 'http://example.com/4',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 30
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b9'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Alice',
+    URL: 'http://fourth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 12
+  },
+  {
+    _id: ObjectId('66324dbcaceac5558916c9ba'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Rasika',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 20,
+    USERNAME: 'Rasi',
+    COMMENTS: 'Good'
+  },
+  {
+    _id: ObjectId('66325286aceac5558916c9bb'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Arnav',
+    URL: 'http://seventh.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 100
+  },
+  {
+    _id: ObjectId('66325286aceac5558916c9bc'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'John',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 120
+  },
+  {
+    _id: ObjectId('66325286aceac5558916c9bd'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'John',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 160
+  }
+]
+
+
+
+
+11. Display exactly two documents written by 'john'.
+
+
+demo> db.books.find({"BY":"John"}).limit(2);
+[
+  {
+    _id: ObjectId('66324c16aceac5558916c9b5'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'MongoDB Descripttion 1',
+    BY: 'John',
+    URL: 'http://first.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 15
+  },
+  {
+    _id: ObjectId('66325286aceac5558916c9bc'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'John',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 120
+  }
+]
+
+
+
+
+12. Display the second document published by 'john'.
+
+
+demo> db.books.find({"BY":"John"}).skip(1).limit(1);
+[
+  {
+    _id: ObjectId('66325286aceac5558916c9bc'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'John',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 120
+  }
+]
+
+
+
+
+13. Display all the books in the sorted fashion. Insert a document using save method.
+
+
+demo> db.books.find({}).sort({"LIKES": -1});
+[
+  {
+    _id: ObjectId('66325286aceac5558916c9bd'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'John',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 160
+  },
+  {
+    _id: ObjectId('66325286aceac5558916c9bc'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'John',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 120
+  },
+  {
+    _id: ObjectId('66325286aceac5558916c9bb'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Arnav',
+    URL: 'http://seventh.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 100
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b8'),
+    TITLE: 'mongodb tutorial',
+    DESCRIPTION: 'MongoDB Tutorial Description',
+    BY: 'Bob',
+    URL: 'http://example.com/4',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 30
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b6'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'MongoDB Description 2',
+    BY: 'Alice',
+    URL: 'http://second.com',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 25
+  },
+  {
+    _id: ObjectId('66324dbcaceac5558916c9ba'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Rasika',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 20,
+    USERNAME: 'Rasi',
+    COMMENTS: 'Good'
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b5'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'MongoDB Descripttion 1',
+    BY: 'John',
+    URL: 'http://first.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 15
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b9'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Alice',
+    URL: 'http://fourth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 12
+  }
+]
+demo> db.books.find({}).sort({"LIKES": 1});
+[
+  {
+    _id: ObjectId('66324c16aceac5558916c9b9'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Alice',
+    URL: 'http://fourth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 12
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b5'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'MongoDB Descripttion 1',
+    BY: 'John',
+    URL: 'http://first.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 15
+  },
+  {
+    _id: ObjectId('66324dbcaceac5558916c9ba'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Rasika',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 20,
+    USERNAME: 'Rasi',
+    COMMENTS: 'Good'
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b6'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'MongoDB Description 2',
+    BY: 'Alice',
+    URL: 'http://second.com',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 25
+  },
+  {
+    _id: ObjectId('66324c16aceac5558916c9b8'),
+    TITLE: 'mongodb tutorial',
+    DESCRIPTION: 'MongoDB Tutorial Description',
+    BY: 'Bob',
+    URL: 'http://example.com/4',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 30
+  },
+  {
+    _id: ObjectId('66325286aceac5558916c9bb'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'Arnav',
+    URL: 'http://seventh.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 100
+  },
+  {
+    _id: ObjectId('66325286aceac5558916c9bc'),
+    TITLE: 'nosql basics',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'John',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 120
+  },
+  {
+    _id: ObjectId('66325286aceac5558916c9bd'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'John',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 160
+  }
+]
+
+
+demo> db.books.save(
+... {
+... "TITLE": "Mongodb",
+... "By":"Varad",
+... "URL":"http://seventh.com/",
+... "TAGS":["NoSQL","Database"],
+... "Likes": 140
+... });
+{
+  acknowledged: true,
+  insertedId: ObjectId('66324dbcaceac5558916c9ba')
+}

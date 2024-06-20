@@ -1,0 +1,34 @@
+C:\home\pankaj\Desktop> ls
+ass1.sh  awk  new1  pankaj.txt  x.txt  xyz
+                                                                              
+C:\home\pankaj\Desktop> cat awk    
+Hello world
+this is a simple file
+it contain multiple line of code
+kill
+                                                                              
+C:\home\pankaj\Desktop> awk '{print $2}' awk        
+world
+is
+contain
+
+                                                                              
+C:\home\pankaj\Desktop> awk '{print $1, $2, $3}' awk
+Hello world
+this is a
+it contain multiple
+kill  
+                                                                              
+C:\home\pankaj\Desktop> awk '{ if (length > max) max = length } END { print max }' awk       
+33
+                                                                              
+C:\home\pankaj\Desktop> awk 'length($0) > 3' awk        
+Hello world
+this is a simple file
+it contain multiple line of code
+kill
+                                                                              
+C:\home\pankaj\Desktop> awk 'length($0) > 10' awk
+Hello world
+this is a simple file
+it contain multiple line of code

@@ -1,0 +1,212 @@
+Name : Harshal Patil
+Class : SY-Btech-AI&DS
+Div : B
+Roll NO : 44
+Subject : DBMS Lab
+
+***** Assignment 1 *****
+
+(base) iot@iot-HP-Pro-Tower-280-G9-PCI-Desktop-PC:~$ sudo mysql;
+[sudo] password for iot: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 8.0.35-0ubuntu0.20.04.1 (Ubuntu)
+
+Copyright (c) 2000, 2023, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use harshal;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> select * from employee;
++---------+----------+--------+
+| empname | street   | city   |
++---------+----------+--------+
+| Kelly   | B street | B city |
+| Neha    | A street | A city |
+| Reesha  | B street | B city |
+| Ritika  | C street | C city |
+| Ritu    | C street | C city |
+| Ryan    | A street | A city |
++---------+----------+--------+
+6 rows in set (0.02 sec)
+
+mysql> select * from company;
++------------------------+--------+
+| compname               | city   |
++------------------------+--------+
+| First Bank Corporation | A city |
+| More Bank Corporation  | B city |
+| No Bank Corporation    | C city |
+| Small Bank Corporation | B city |
+| Yes Bank Corporation   | A city |
++------------------------+--------+
+5 rows in set (0.02 sec)
+
+mysql> select * from works;
++---------+------------------------+--------+
+| empname | compname               | salary |
++---------+------------------------+--------+
+| Neha    | First Bank Corporation |  40000 |
+| Reesha  | Small Bank Corporation |  30000 |
+| Ritika  | No Bank Corporation    |  35000 |
+| Ritu    | Small Bank Corporation |  25000 |
+| Ryan    | First Bank Corporation |  15000 |
+| Kelly   | First Bank Corporation |  15000 |
++---------+------------------------+--------+
+6 rows in set (0.02 sec)
+
+mysql> select * from manages;
++---------+------------+
+| empname | managename |
++---------+------------+
+| Neha    | Ryan       |
+| Neha    | Kelly      |
+| Reesha  | Ritu       |
++---------+------------+
+3 rows in set (0.00 sec)
+
+QUERY 1 : 
+
+mysql> select empname from works where compname="First Bank Corporation";
++---------+
+| empname |
++---------+
+| Neha    |
+| Ryan    |
+| Kelly   |
++---------+
+3 rows in set (0.00 sec)
+
+QUERY 2 : 
+
+mysql> select e.empname , e.city from employee e , works w where e.empname=w.empname and compname="First Bank Corporation";
++---------+--------+
+| empname | city   |
++---------+--------+
+| Neha    | A city |
+| Ryan    | A city |
+| Kelly   | B city |
++---------+--------+
+3 rows in set (0.00 sec)
+
+QUERY 3 : 
+
+mysql> select e.empname , e.street , e.city from employee e , works w where e.empname=w.empname and compname="First Bank Corporation" and salary>=10000;
++---------+----------+--------+
+| empname | street   | city   |
++---------+----------+--------+
+| Neha    | A street | A city |
+| Ryan    | A street | A city |
+| Kelly   | B street | B city |
++---------+----------+--------+
+3 rows in set (0.01 sec)
+
+QUERY 4 : 
+
+mysql> select e.empname from employee e , works w , company c where e.empname=w.empname and c.compname=w.compname and e.city=c.city;
++---------+
+| empname |
++---------+
+| Neha    |
+| Reesha  |
+| Ritika  |
+| Ryan    |
++---------+
+4 rows in set (0.00 sec)
+
+QUERY 5 : 
+
+mysql> select e1.empname from employee e1 , employee e2 , manages m where e1.empname=m.empname and e2.empname=m.managename and e1.city=e2.city and e1.street=e2.street;
++---------+
+| empname |
++---------+
+| Neha    |
++---------+
+1 row in set (0.00 sec)
+
+QUERY 6 : 
+
+mysql> select e.empname from employee e , works w where e.empname=w.empname and compname!="First Bank Corporation";
++---------+
+| empname |
++---------+
+| Reesha  |
+| Ritika  |
+| Ritu    |
++---------+
+3 rows in set (0.00 sec)
+
+QUERY 7 :
+ 
+mysql> select w.empname , w.salary from works w where w.salary  > all(select salary from works where compname="Small Bank Corporation);
++---------+--------+
+| empname | salary |
++---------+--------+
+| Neha    |  40000 |
+| Ritika  |  35000 |
++---------+--------+
+2 rows in set (0.01 sec)
+
+QUERY 8 :  
+
+mysql> select compname from company where city=all(select city from company where compname="Small Bank Corporation") and compname!="Small Bank Corporation";
++-----------------------+
+| compname              |
++-----------------------+
+| More Bank Corporation |
++-----------------------+
+1 row in set (0.00 sec)
+
+QUERY 9 : 
+
+mysql> select * from works w where salary>(select avg(salary) from  works s where w.compname=s.compname);
++---------+------------------------+--------+
+| empname | compname               | salary |
++---------+------------------------+--------+
+| Neha    | First Bank Corporation |  40000 |
+| Reesha  | Small Bank Corporation |  30000 |
++---------+------------------------+--------+
+2 rows in set (0.00 sec)
+
+QUERY 10 :
+ 
+mysql> select count( empname ) cnt, compname from works group by compname limit 1;
++-----+------------------------+
+| cnt | compname               |
++-----+------------------------+
+|   3 | First Bank Corporation |
++-----+------------------------+
+1 row in set (0.00 sec)
+
+QUERY 11 :
+
+mysql> select avg(salary) as "FirstAvg" from works where compname = "First Bank Corporation";
++--------------------+
+| FirstAvg           |
++--------------------+
+| 23333.333333333332 |
++--------------------+
+1 row in set (0.00 sec)
+
+QUERY 12 :
+
+mysql> select empname , compname from works where salary > "FirstAvg" and compname != "First Bank Corporation";
++---------+------------------------+
+| empname | compname               |
++---------+------------------------+
+| Reesha  | Small Bank Corporation |
+| Ritika  | No Bank Corporation    |
+| Ritu    | Small Bank Corporation |
++---------+------------------------+
+3 rows in set, 1 warning (0.00 sec)
+
+
+

@@ -1,0 +1,83 @@
+SQL> select * from o_roll;
+
+    ROLLNO NAME       DOB       PHONE           ADDRESS
+---------- ---------- --------- --------------- ------------------------------
+       101 John       01-JAN-90 1234567890      123 Main St
+       102 Jane       15-MAY-92 9876543210      456 Elm St
+       103 Alice      30-SEP-88 5551234567      789 Oak St
+
+SQL> select * from n_roll
+  2  ;
+
+    ROLLNO NAME       DOB       PHONE           ADDRESS
+---------- ---------- --------- --------------- ------------------------------
+       102 Jane       15-MAY-92 9876543210      456 Elm St
+       104 Bob        20-AUG-91 3339998888      321 Pine St
+       105 Emily      10-DEC-93 1112223333      789 Maple St
+
+SQL> DECLARE
+  2      CURSOR o_cursor IS
+  3          SELECT Rollno, Name, DOB, Phone, Address FROM O_Roll;
+  4
+  5      CURSOR n_cursor IS
+  6          SELECT Rollno, Name, DOB, Phone, Address FROM N_Roll;
+  7
+  8      v_o_rollno O_Roll.Rollno%TYPE;
+  9      v_o_name O_Roll.Name%TYPE;
+ 10      v_o_dob O_Roll.DOB%TYPE;
+ 11      v_o_phone O_Roll.Phone%TYPE;
+ 12      v_o_address O_Roll.Address%TYPE;
+ 13
+ 14      v_n_rollno N_Roll.Rollno%TYPE;
+ 15      v_n_name N_Roll.Name%TYPE;
+ 16      v_n_dob N_Roll.DOB%TYPE;
+ 17      v_n_phone N_Roll.Phone%TYPE;
+ 18      v_n_address N_Roll.Address%TYPE;
+ 19
+ 20      v_duplicate BOOLEAN;
+ 21  BEGIN
+ 22      -- Implicit Cursor
+ 23      DBMS_OUTPUT.PUT_LINE('Implicit Cursor:');
+ 24      FOR o_rec IN o_cursor LOOP
+ 25          v_duplicate := FALSE;
+ 26          FOR n_rec IN n_cursor LOOP
+ 27              IF o_rec.Rollno = n_rec.Rollno THEN
+ 28                  v_duplicate := TRUE;
+ 29                  EXIT;
+ 30              END IF;
+ 31          END LOOP;
+ 32
+ 33          IF NOT v_duplicate THEN
+ 34              INSERT INTO N_Roll (Rollno, Name, DOB, Phone, Address)
+ 35              VALUES (o_rec.Rollno, o_rec.Name, o_rec.DOB, o_rec.Phone, o_rec.Address);
+ 36              DBMS_OUTPUT.PUT_LINE('Inserted record: ' || o_rec.Rollno || ', ' || o_rec.Name);
+ 37          ELSE
+ 38              DBMS_OUTPUT.PUT_LINE('Duplicate record found for: ' || o_rec.Rollno || ', ' || o_rec.Name);
+ 39          END IF;
+ 40      END LOOP;
+ 41  END;
+ 42  /
+Implicit Cursor:
+Inserted record: 101, John
+Duplicate record found for: 102, Jane
+Inserted record: 103, Alice
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from o_roll;
+
+    ROLLNO NAME       DOB       PHONE           ADDRESS
+---------- ---------- --------- --------------- ------------------------------
+       101 John       01-JAN-90 1234567890      123 Main St
+       102 Jane       15-MAY-92 9876543210      456 Elm St
+       103 Alice      30-SEP-88 5551234567      789 Oak St
+
+SQL> select * from n_roll;
+
+    ROLLNO NAME       DOB       PHONE           ADDRESS
+---------- ---------- --------- --------------- ------------------------------
+       102 Jane       15-MAY-92 9876543210      456 Elm St
+       104 Bob        20-AUG-91 3339998888      321 Pine St
+       105 Emily      10-DEC-93 1112223333      789 Maple St
+       101 John       01-JAN-90 1234567890      123 Main St
+       103 Alice      30-SEP-88 5551234567      789 Oak St

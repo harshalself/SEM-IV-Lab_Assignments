@@ -1,0 +1,162 @@
+1. Find the number of books published by john.
+
+ db.books.aggregate([
+... { $match: {"BY":"John"} },
+... { $count: "BookPublishedByJohn"}
+... ]);
+[ { BookPublishedByJohn: 3 } ]
+
+2. Find books which have minimum likes and maximum likes published by john.
+
+demo> db.books.aggregate([
+... { $match: {"BY":"John"} },
+... { $group: {
+... _id: null,
+... minLikes: {$min: "$LIKES"},
+... maxLikes: {$max: "$LIKES"}
+... }}]);
+[ { _id: null, minLikes: 15, maxLikes: 160 } ]
+
+3. Find the average number of likes of the books published by john.
+
+demo> db.books.aggregate([
+... { $match: {"BY":"John"} },
+... { $group: {
+... _id:null,
+... avgLikes: {$avg: "$LIKES"}
+... }
+... }
+... ]);
+[ { _id: null, avgLikes: 98.33333333333333 } ]
+
+4. Find the first and last book published by john.
+
+demo> db.books.find({"BY":"John"}).sort({_id:1}).limit(1);
+[
+  {
+    _id: ObjectId('66324c16aceac5558916c9b5'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'MongoDB Descripttion 1',
+    BY: 'John',
+    URL: 'http://first.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 15
+  }
+]
+demo> db.books.find({"BY":"John"}).sort({_id:-1}).limit(1);
+[
+  {
+    _id: ObjectId('66325286aceac5558916c9bd'),
+    TITLE: 'mongodb overview',
+    DESCRIPTION: 'NoSQL Basics Description',
+    BY: 'John',
+    URL: 'http://sixth.com/',
+    TAGS: [ 'NoSQL', 'Database' ],
+    LIKES: 160
+  }
+]
+
+
+5. Create an index on author name.
+Display the books published by john and check if it uses the index which we have created
+
+demo> db.books.createIndex({ BY: 1});
+BY_1
+demo> db.books.find({"BY":"John"}).explain("executionStats");
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'demo.books',
+    indexFilterSet: false,
+    parsedQuery: { BY: { '$eq': 'John' } },
+    queryHash: '8E6205EC',
+    planCacheKey: '5A3BED13',
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    winningPlan: {
+      stage: 'FETCH',
+      inputStage: {
+        stage: 'IXSCAN',
+        keyPattern: { BY: 1 },
+        indexName: 'BY_1',
+        isMultiKey: false,
+        multiKeyPaths: { BY: [] },
+        isUnique: false,
+        isSparse: false,
+        isPartial: false,
+        indexVersion: 2,
+        direction: 'forward',
+        indexBounds: { BY: [ '["John", "John"]' ] }
+      }
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 3,
+    executionTimeMillis: 15,
+    totalKeysExamined: 3,
+    totalDocsExamined: 3,
+    executionStages: {
+      stage: 'FETCH',
+      nReturned: 3,
+      executionTimeMillisEstimate: 10,
+      works: 4,
+      advanced: 3,
+      needTime: 0,
+      needYield: 0,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      docsExamined: 3,
+      alreadyHasObj: 0,
+      inputStage: {
+        stage: 'IXSCAN',
+        nReturned: 3,
+        executionTimeMillisEstimate: 10,
+        works: 4,
+        advanced: 3,
+        needTime: 0,
+        needYield: 0,
+        saveState: 0,
+        restoreState: 0,
+        isEOF: 1,
+        keyPattern: { BY: 1 },
+        indexName: 'BY_1',
+        isMultiKey: false,
+        multiKeyPaths: { BY: [] },
+        isUnique: false,
+        isSparse: false,
+        isPartial: false,
+        indexVersion: 2,
+        direction: 'forward',
+        indexBounds: { BY: [ '["John", "John"]' ] },
+        keysExamined: 3,
+        seeks: 1,
+        dupsTested: 0,
+        dupsDropped: 0
+      }
+    }
+  },
+  command: { find: 'books', filter: { BY: 'John' }, '$db': 'demo' },
+  serverInfo: {
+    host: 'LAPTOP-4KU83MN6',
+    port: 27017,
+    version: '7.0.8',
+    gitVersion: 'c5d33e55ba38d98e2f48765ec4e55338d67a4a64'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeRestricted'
+  },
+  ok: 1
+}
+demo>

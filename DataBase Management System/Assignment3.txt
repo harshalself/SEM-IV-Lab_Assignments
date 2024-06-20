@@ -1,0 +1,60 @@
+SQL> select * from students;
+
+       SID SNAME        INSTR_ID CITY
+---------- ---------- ---------- ----------
+       101 Kunal             201 Mumvai
+       102 Suresh            202 Pune
+       103 Raj               203 Nashik
+       104 Mohan                 Nashik
+
+SQL> select * from instructor;
+
+  INSTR_ID INST_NAME  CITY       SPECIALIZA
+---------- ---------- ---------- ----------
+       201 Dr.Smith   Mumvai     Computer
+       202 Prof.Patel Pune       Maths
+       203 Prof.Gupta Nashik     Computer
+       204 Dr.Kanade  Nashik     Mechanical
+
+//1.
+SQL> select s.sname,i.inst_name from students s inner join instructor i on s.instr_id=i.instr_id;
+
+SNAME      INST_NAME
+---------- ----------
+Kunal      Dr.Smith
+Suresh     Prof.Patel
+Raj        Prof.Gupta
+
+//2.
+SQL> select s.sname from students s left join instructor i on s.instr_id=i.instr_id where i.instr_id IS NULL;
+
+SNAME
+----------
+Mohan
+
+//3.
+SQL> select s.sname,i.inst_name from students s full outer join instructor i on s.instr_id=i.instr_id where s.instr_id IS NULL or i.instr_id IS NULL;
+
+SNAME      INST_NAME
+---------- ----------
+Mohan
+           Dr.Kanade
+
+//4.
+SQL> select s.sname from students s inner join instructor i on s.instr_id=i.instr_id where i.specialization='Computer';
+
+SNAME
+----------
+Kunal
+Raj
+
+//5.
+SQL> create view stinpune as select count(s.sid) as total_student from students s inner join instructor i on s.instr_id=i.instr_id and i.city='Pune';
+
+View created.
+
+SQL> select * from stinpune;
+
+TOTAL_STUDENT
+-------------
+            1

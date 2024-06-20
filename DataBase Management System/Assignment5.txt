@@ -1,0 +1,123 @@
+
+SQL> select * from borrower;
+
+    ROLLIN NAME       DATEOFISS NAMEOFBOOK                     STATUS
+---------- ---------- --------- ------------------------------ ----------
+       101 John       01-APR-24 Introduction to SQL            I
+       102 Jane       15-MAR-24 Python Programming             R
+       103 Alice      10-APR-24 Data Structures and Algorithms I
+
+SQL> select * from fine;
+
+   ROLL_NO DATES            AMT
+---------- --------- ----------
+       101 16-APR-24         75
+       102 10-APR-24        150
+       103 20-APR-24          0
+
+//1.
+SQL> set serveroutput on;
+SQL> DECLARE
+  2      v_rollin    NUMBER;
+  3      v_name      VARCHAR2(100);
+  4      v_dateofissue DATE;
+  5      v_nameofbook VARCHAR2(100);
+  6      v_status    VARCHAR2(1); -- Assuming 'I' for Issued and 'R' for Returned
+  7  BEGIN
+  8      -- Accept input from the user
+  9      v_rollin := &v_rollin; -- Assuming Rollin is a numeric value
+ 10      v_name := '&v_name'; -- Assuming Name is a string
+ 11      v_dateofissue := TO_DATE('&v_dateofissue', 'YYYY-MM-DD'); -- Assuming DateofIssue is in 'YYYY-MM-DD' format
+ 12      v_nameofbook := '&v_nameofbook'; -- Assuming NameofBook is a string
+ 13      v_status := 'I'; -- Assuming initially status is 'I' for Issued
+ 14
+ 15      -- Inserting values into the Borrower table
+ 16      INSERT INTO Borrower (Rollin, Name, DateofIssue, NameofBook, Status)
+ 17      VALUES (v_rollin, v_name, v_dateofissue, v_nameofbook, v_status);
+ 18
+ 19      -- Displaying success message
+ 20      DBMS_OUTPUT.PUT_LINE('Borrower details inserted successfully.');
+ 21  END;
+ 22  /
+
+Enter value for v_rollin: 104
+old   9:     v_rollin := &v_rollin; -- Assuming Rollin is a numeric value
+new   9:     v_rollin := 104; -- Assuming Rollin is a numeric value
+Enter value for v_name: David
+old  10:     v_name := '&v_name'; -- Assuming Name is a string
+new  10:     v_name := 'David'; -- Assuming Name is a string
+Enter value for v_dateofissue: 22-MAR-24
+old  11:     v_dateofissue := TO_DATE('&v_dateofissue', 'YYYY-MM-DD'); -- Assuming DateofIssue is in 'YYYY-MM-DD' format
+new  11:     v_dateofissue := TO_DATE('22-MAR-24', 'YYYY-MM-DD'); -- Assuming DateofIssue is in 'YYYY-MM-DD' format
+Enter value for v_nameofbook: Database Management
+old  12:     v_nameofbook := '&v_nameofbook'; -- Assuming NameofBook is a string
+new  12:     v_nameofbook := 'Database Management'; -- Assuming NameofBook is a string
+Borrower details inserted successfully.
+PL/SQL procedure successfully completed.
+
+SQL> select * from borrower;
+
+    ROLLIN NAME       DATEOFISS NAMEOFBOOK                     STATUS
+---------- ---------- --------- ------------------------------ ----------
+       101 John       01-APR-24 Introduction to SQL            I
+       102 Jane       15-MAR-24 Python Programming             R
+       103 Alice      10-APR-24 Data Structures and Algorithms I
+       104 David      24-MAR-22 Database Management            I
+
+//2.
+SQL> DECLARE
+  2      v_days NUMBER;
+  3      v_fine_amt NUMBER;
+  4      v_dateofissue DATE;
+  5      v_rollin    NUMBER;
+  6  BEGIN
+  7      -- Accept input for rollin number
+  8      v_rollin := &v_rollin;
+  9
+ 10      -- Retrieve date of issue based on rollin number
+ 11      SELECT DateofIssue INTO v_dateofissue FROM Borrower WHERE Rollin = v_rollin;
+ 12
+ 13      -- Calculate number of days between current date and date of issue
+ 14      v_days := TRUNC(SYSDATE - v_dateofissue);
+ 15
+ 16      -- Check if number of days is between 15 and 30
+ 17      IF v_days BETWEEN 15 AND 30 THEN
+ 18          v_fine_amt := 5 * v_days;
+ 19      ELSIF v_days > 30 THEN
+ 20          v_fine_amt := 50 * v_days;
+ 21      ELSE
+ 22          v_fine_amt := 0; -- No fine
+ 23      END IF;
+ 24
+ 25      -- Insert fine details into the Fine table if fine amount is greater than 0
+ 26      IF v_fine_amt > 0 THEN
+ 27          INSERT INTO Fine (Roll_no, Dates, Amt)
+ 28          VALUES (v_rollin, SYSDATE, v_fine_amt);
+ 29
+ 30          -- Update status to 'R' for Returned
+ 31          UPDATE Borrower SET Status = 'R' WHERE Rollin = v_rollin;
+ 32
+ 33          -- Display fine details
+ 34          DBMS_OUTPUT.PUT_LINE('Fine of Rs ' || v_fine_amt || ' has been imposed.');
+ 35          DBMS_OUTPUT.PUT_LINE('Borrower status updated to Returned.');
+ 36      ELSE
+ 37          DBMS_OUTPUT.PUT_LINE('No fine imposed.');
+ 38      END IF;
+ 39  END;
+ 40  /
+Enter value for v_rollin: 101
+old   8:     v_rollin := &v_rollin;
+new   8:     v_rollin := 101;
+Fine of Rs 100 has been imposed.
+Borrower status updated to Returned.
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from borrower;
+
+    ROLLIN NAME       DATEOFISS NAMEOFBOOK                     STATUS
+---------- ---------- --------- ------------------------------ ----------
+       101 John       01-APR-24 Introduction to SQL            R
+       102 Jane       15-MAR-24 Python Programming             R
+       103 Alice      10-APR-24 Data Structures and Algorithms I
+       104 David      24-MAR-22 Database Management            I

@@ -1,0 +1,146 @@
+SQL*Plus: Release 10.2.0.1.0 - Production on Sat Mar 16 05:04:05 2024
+
+Copyright (c) 1982, 2005, Oracle.  All rights reserved.
+
+SQL> conn;
+Enter user-name: system
+Enter password:
+Connected.
+SQL> create user varad identified by varad;
+
+User created.
+
+SQL> grant dba to varad;
+
+Grant succeeded.
+
+SQL> disconn;
+Disconnected from Oracle Database 10g Express Edition Release 10.2.0.1.0 - Production
+SQL> conn;
+Enter user-name: varad
+Enter password:
+Connected.
+
+SQL> create table employee(empno number, empname varchar2(10), designation varchar2(10), city varchar2(10), salary int, zipcode varchar2(5), county varchar2(10));            
+Table created.
+
+SQL> desc employee;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EMPNO                                              NUMBER
+ EMPNAME                                            VARCHAR2(10)
+ DESIGNATION                                        VARCHAR2(10)
+ CITY                                               VARCHAR2(10)
+ SALARY                                             NUMBER(38)
+ ZIPCODE                                            VARCHAR2(5)
+ COUNTY                                             VARCHAR2(10)
+
+//1.
+
+SQL> create sequence s1
+  2  start with 1
+  3  minvalue 1
+  4  maxvalue 100
+  5  increment by 1
+  6  cycle;
+
+Sequence created.
+
+SQL> select s1.nextval from dual;
+
+   NEXTVAL
+----------
+         1
+
+SQL> insert into employee values(s1.currval,'Sunil','Manager','Mumbai',35000,'42230','India');
+
+1 row created.
+
+SQL> insert into employee values(s1.nextval,'Raj','clerk','pune',14000,'42250','India');
+
+1 row created.
+
+SQL> select * from employee;
+
+     EMPNO EMPNAME    DESIGNATIO CITY           SALARY ZIPCO COUNTY
+---------- ---------- ---------- ---------- ---------- ----- ----------
+         1 Sunil      Manager    Mumbai          35000 42230 India
+         2 Raj        clerk      pune            14000 42250 India
+
+//2.
+SQL> create index id_con on employee(county);
+
+Index created.
+
+//3.
+
+SQL> insert into employee values(s1.nextval,'Rohan','clerk','pune',14000,'071','India');
+
+1 row created.
+
+SQL> select county from employee where zipcode='071';
+
+COUNTY
+----------
+India
+
+/*
+Observation:
+If the query executes quickly and returns results promptly, it indicates efficient index usage, likely on the zipcode or county column. Index scan to efficiently locate the relevant rows. An index scan is faster than a full table scan when searching based on an indexed column
+ 
+*/
+
+//4.
+
+SQL> insert into employee values(s1.nextval,'Rishi','Manager','Mumbai',35000,'07143','India');
+
+1 row created.
+
+SQL> insert into employee values(s1.nextval,'Kunal','Clerk','Pune',20000,'00321','india');
+
+1 row created.
+
+SQL> insert into employee values(s1.nextval,'Neeta','Manager','Mumbai',80000,'65241','India');
+
+1 row created.
+
+SQL> insert into employee values(s1.nextval,'&empname','&designation','&city',&salary,'&zipcode','&county');
+Enter value for empname: Rutuja
+Enter value for designation: Manager
+Enter value for city: Mumbai
+Enter value for salary: 67000
+Enter value for zipcode: 09879
+Enter value for county: India
+old   1: insert into employee values(s1.nextval,'&empname','&designation','&city',&salary,'&zipcode','&county')
+new   1: insert into employee values(s1.nextval,'Rutuja','Manager','Mumbai',67000,'09879','India')
+
+1 row created.
+
+SQL> select * from employee;
+
+     EMPNO EMPNAME    DESIGNATIO CITY           SALARY ZIPCO COUNTY
+---------- ---------- ---------- ---------- ---------- ----- ----------
+         1 Sunil      Manager    Mumbai          35000 42230 India
+         2 Raj        clerk      pune            14000 42250 India
+         3 Rohan      clerk      pune            14000 071   India
+         4 Suresh     Staff      Mumbai          70000 071   India
+         5 Mohan      Staff      Mumbai          55000 0714  India
+         6 Rishi      Manager    Mumbai          35000 07143 India
+         7 Kunal      Clerk      Pune            20000 00321 india
+         8 Neeta      Manager    Mumbai          80000 65241 India
+         9 Rutuja     Manager    Mumbai          67000 09879 India
+
+9 rows selected.
+
+//4.
+SQL> create view v1 as select * from employee where salary<50000 and city='Mumbai';
+
+View created.
+
+SQL> select * from v1;
+
+     EMPNO EMPNAME    DESIGNATIO CITY           SALARY ZIPCO COUNTY
+---------- ---------- ---------- ---------- ---------- ----- ----------
+         1 Sunil      Manager    Mumbai          35000 42230 India
+         6 Rishi      Manager    Mumbai          35000 07143 India
+

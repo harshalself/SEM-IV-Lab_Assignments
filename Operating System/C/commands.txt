@@ -1,0 +1,97 @@
+:\home\pankaj\Desktop> cat awk
+hello
+my self pankaj
+i will kill u
+by...
+                                                                              
+C:\home\pankaj\Desktop> ls     
+ass1.sh  awk  new1  pankaj.txt  x.txt  xyz
+                                                                              
+C:\home\pankaj\Desktop> cat awk new1
+hello
+my self pankaj
+i will kill u
+by...
+hello world
+this is simple file
+it contains multiple line of txt dsfsd
+
+asdf
+
+                                                                              
+C:\home\pankaj\Desktop> cat -n awk       
+     1  hello
+     2  my self pankaj
+     3  i will kill u
+     4  by...
+                                                                              
+C:\home\pankaj\Desktop> cat > u   
+^C
+^C
+                                                                              
+C:\home\pankaj\Desktop> cat awk > new1
+                                                                              
+C:\home\pankaj\Desktop> cat new1      
+hello
+my self pankaj
+i will kill u
+by...
+                                                                              
+C:\home\pankaj\Desktop> cat awk       
+hello
+my self pankaj
+i will kill u
+by...
+                                                                              
+C:\home\pankaj\Desktop> cat -s awk
+hello
+my self pankaj
+i will kill u
+by...
+                                                                              
+C:\home\pankaj\Desktop> cat -v awk
+hello
+my self pankaj
+i will kill u
+by...
+                                                                              
+C:\home\pankaj\Desktop> ls | grep "page"
+                                                                              
+C:\home\pankaj\Desktop> ls | grep "page" | wc -l
+0
+                                                                              
+C:\home\pankaj\Desktop> tr 'Hello' | tr 'red''line'
+tr: missing operand after ‘Hello’
+Two strings must be given when translating.
+Try 'tr --help' for more information.
+tr: missing operand after ‘redline’
+Two strings must be given when translating.
+Try 'tr --help' for more information.
+                                                                              
+C:\home\pankaj\Desktop> tr 'Hello' | tr 'red''line' awk
+tr: missing operand after ‘Hello’
+Two strings must be given when translating.
+Try 'tr --help' for more information.
+                                                                              
+C:\home\pankaj\Desktop> ls                      
+ass1.sh  awk  new1  pankaj.txt  u  x.txt  xyz
+                                                                              
+C:\home\pankaj\Desktop> cat u     
+
+                                                                              
+C:\home\pankaj\Desktop> echo "Operating system" > u                       
+                                                                              
+C:\home\pankaj\Desktop> cat u
+Operating system
+
+:\home\pankaj\Desktop> grep -i "pattern" u  
+                                                                              
+C:\home\pankaj\Desktop> grep 'pattern' u   
+                                                                              
+C:\home\pankaj\Desktop> grep -c 'pattern' u
+0
+                                                                              
+C:\home\pankaj\Desktop> grep -l 'pattern' u awk
+                                                                              
+C:\home\pankaj\Desktop> grep -o 'pattern' u    
+                                                                   
